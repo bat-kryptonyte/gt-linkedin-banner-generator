@@ -17,6 +17,8 @@ import {
   Flex,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { IconContext } from 'react-icons';
+import { AiOutlineCloudDownload } from 'react-icons/ai';
 import GTNavbar from '@/components/GTNavBar';
 import GTFooter from '@/components/Footer';
 
@@ -199,16 +201,19 @@ export default function Home() {
         return currentSize;
       };
 
+      const input1Value = input1Ref.current?.value || 'Name';
+      const input2Value = input2Ref.current?.value || 'Major';
+
       ctx.fillStyle = selectedBanner.color;
       const adjustedFontSize1 = adjustFontSize(bannerFontSize, input1Ref.current?.value || '');
       ctx.font = `${adjustedFontSize1}px  ${selectedBanner.font.split(' ').slice(1).join(' ')}`;
-      const input1Width = ctx.measureText(input1Ref.current?.value || '').width;
-      ctx.fillText(input1Ref.current?.value || '', xPosition - input1Width, yPosition);
+
+      ctx.fillText(input1Value, xPosition - ctx.measureText(input1Value).width, yPosition);
 
       const adjustedFontSize2 = adjustFontSize(bannerFontSize / 2, input2Ref.current?.value || '');
       ctx.font = `${adjustedFontSize2}px  ${selectedBanner.font.split(' ').slice(1).join(' ')}`;
-      const input2Width = ctx.measureText(input2Ref.current?.value || '').width;
-      ctx.fillText(input2Ref.current?.value || '', xPosition - input2Width, yPosition + 60);
+
+      ctx.fillText(input2Value, xPosition - ctx.measureText(input2Value).width, yPosition + 60);
 
       setPreviewSrc(canvas.toDataURL('image/png'));
     };
@@ -231,9 +236,14 @@ export default function Home() {
     <Box maxWidth="80vw" mx="auto">
       <GTNavbar />
       <Container maxW="container.xl" paddingTop={5}>
-        <Heading paddingBottom={10} fontSize={[21, 23, 25]}>
+        <Heading paddingBottom={3} fontSize={[21, 23, 25]}>
           Create a GT-themed LinkedIn Profile Banner
         </Heading>
+        <Text paddingBottom={10}>
+          Your profile background is the single largest element on your entire LinkedIn page and you
+          can use it to professionally associate yourself with Tech! Customize a professional banner
+          below and get noticed on LinkedIn:
+        </Text>
 
         <Flex alignItems="flex-start" paddingBottom={10} wrap="wrap">
           <VStack
@@ -329,7 +339,18 @@ export default function Home() {
             <Text fontSize={['xs', 'sm', 'md']} fontWeight={'semibold'}>
               All Time Downloads: {downloads}
             </Text>
-            <Button fontSize={['xs', 'sm', 'md']} onClick={downloadImage}>
+            <Button
+              fontSize={['xs', 'sm', 'md']}
+              alignContent="space-between"
+              onClick={downloadImage}
+            >
+              <IconContext.Provider
+                value={{ color: `${colorMode === 'dark' ? 'white' : 'black'}` }}
+              >
+                <div style={{ marginRight: '8px' }}>
+                  <AiOutlineCloudDownload />
+                </div>
+              </IconContext.Provider>
               Download Image
             </Button>
           </HStack>
