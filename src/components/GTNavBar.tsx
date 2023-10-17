@@ -25,14 +25,19 @@ const GTNavbar: React.FC = () => {
       </Box>
       <Spacer />
       <Box display="flex" alignItems="center" height="100%">
-        <Link href="https://github.com/your_github_username" isExternal mx={4}>
-          <IconButton aria-label="Github" icon={<FaGithub />} bg="transparent" />
+        <Link
+          href="https://github.com/bat-kryptonyte/gt-linkedin-banner-generator"
+          isExternal
+          mx={4}
+        >
+          <IconButton aria-label="Github" icon={<FaGithub />} bg="transparent" size={'lg'} />
         </Link>
         <IconButton
           aria-label="Toggle Color Mode"
           icon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
           onClick={toggleColorMode}
           bg="transparent"
+          size={'lg'}
         />
       </Box>
     </Flex>

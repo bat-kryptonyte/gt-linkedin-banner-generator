@@ -1,5 +1,7 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
+import { useColorMode } from '@chakra-ui/react';
+
 import {
   Input,
   Button,
@@ -11,6 +13,7 @@ import {
   Box,
   FormLabel,
   Heading,
+  Flex,
 } from '@chakra-ui/react';
 import GTNavbar from '@/components/GTNavBar';
 
@@ -19,18 +22,25 @@ export default function Home() {
     { position: 'top', segment: 5 },
     { position: 'bottom', segment: 6 },
     { position: 'top', segment: 6 },
-    { position: 'top', segment: 4 },
+    { position: 'top', segment: 2 },
   ];
 
   const banners = [
+    { src: '/images/default-blue.jpeg', block: blocks[1], font: '75px Georgia', color: 'white' },
     { src: '/images/default.jpeg', block: blocks[0], font: '75px Georgia', color: '#003057' },
     { src: '/images/pool.jpeg', block: blocks[1], font: '75px Times New Roman', color: 'white' },
     { src: '/images/tower.jpeg', block: blocks[2], font: '75px Georgia', color: 'white' },
+
+    { src: '/images/cap.jpeg', block: blocks[1], font: '75px Georgia', color: 'white' },
+
+    { src: '/images/wreck.jpeg', block: blocks[1], font: '50px Georgia', color: 'black' },
   ];
 
   const [selectedBanner, setSelectedBanner] = useState(banners[0]);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [downloads, setDownloads] = useState(0);
+
+  const { colorMode } = useColorMode();
 
   const input1Ref = useRef<HTMLInputElement>(null);
   const input2Ref = useRef<HTMLInputElement>(null);
@@ -47,6 +57,18 @@ export default function Home() {
         if (data.success) {
           updateDownloadCount();
         }
+        const downloadLink = document.createElement('a');
+
+        if (previewSrc) {
+          downloadLink.href = previewSrc;
+        }
+        downloadLink.download = 'banner.png';
+
+        document.body.appendChild(downloadLink);
+
+        downloadLink.click();
+
+        document.body.removeChild(downloadLink);
       });
   };
 
@@ -145,6 +167,7 @@ export default function Home() {
         <Heading paddingBottom={10} fontSize={25}>
           Create a GT-themed LinkedIn Profile Banner
         </Heading>
+
         <HStack spacing={5} alignItems="flex-start" paddingBottom={10}>
           <VStack spacing={3} alignItems="flex-start" flex="1">
             <Heading fontSize={20}>Banner Text:</Heading>
@@ -155,6 +178,7 @@ export default function Home() {
                 placeholder="Name"
                 ref={input1Ref}
                 onChange={() => generateImage()}
+                borderColor={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
               />
               <Text fontSize={10}>Your Name: This will appear the largest on the banner</Text>
             </VStack>
@@ -166,31 +190,29 @@ export default function Home() {
                 placeholder="Major"
                 ref={input2Ref}
                 onChange={() => generateImage()}
+                borderColor={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
               />
 
               <Text fontSize={10}>Example: ISyE @ GT</Text>
             </VStack>
-
-            <VStack spacing={1} alignItems="flex-start" w="100%">
-              <FormLabel htmlFor="website">Website</FormLabel>
-              <Input
-                id="website"
-                placeholder="Website"
-                ref={input3Ref}
-                onChange={() => generateImage()}
-              />
-            </VStack>
           </VStack>
 
-          <VStack spacing={3} flex="1">
+          <VStack spacing={6} flex="1">
             <Heading fontSize={20}>Choose a template:</Heading>
-            <HStack spacing={5}>
+            <Flex wrap="wrap">
               {banners.map((banner, index) => (
-                <Box key={index} border={selectedBanner.src === banner.src ? '2px solid red' : ''}>
+                <Box
+                  key={index}
+                  border={selectedBanner.src === banner.src ? '2px solid black' : ''}
+                  flexBasis={['100%', '50%', '50%']}
+                  maxWidth={['100%', '50%', '50%']}
+                  boxSizing="border-box"
+                  padding="5px"
+                >
                   <ChakraImage
                     src={banner.src}
                     alt={`Banner ${index}`}
-                    width={150}
+                    width="100%"
                     height={30}
                     objectFit="cover"
                     cursor="pointer"
@@ -198,7 +220,7 @@ export default function Home() {
                   />
                 </Box>
               ))}
-            </HStack>
+            </Flex>
           </VStack>
         </HStack>
         {previewSrc && (
@@ -207,10 +229,14 @@ export default function Home() {
               Your LinkedIn Banner:
             </Text>
             <ChakraImage src={previewSrc} alt="Generated Banner" boxSize="50%" />
-            <Button onClick={downloadImage}>Download</Button>
+            <HStack spacing={10}>
+              <Text fontSize="sm" fontWeight={'semibold'}>
+                All Time Downloads: {downloads}
+              </Text>
+              <Button onClick={downloadImage}>Download Your Banner</Button>
+            </HStack>
           </VStack>
         )}
-        <Text fontSize="lg">Total Banner Downloads: {downloads}</Text>
       </Container>
     </Box>
   );
