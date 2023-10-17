@@ -14,14 +14,16 @@ const GTNavbar: React.FC = () => {
       height="80px"
     >
       <Box display="flex" alignItems="center" height="100%">
-        <Image
-          src="/gt-logo-oneline-white.svg"
-          alt="Georgia Tech Logo"
-          boxSize="250px"
-          ml={5}
-          fit="contain"
-          filter={colorMode === 'light' ? 'invert(1)' : 'none'}
-        />
+        <Link href="https://gatech.edu" isExternal mx={4}>
+          <Image
+            src="/gt-logo-oneline-white.svg"
+            alt="Georgia Tech Logo"
+            boxSize="250px"
+            ml={5}
+            fit="contain"
+            filter={colorMode === 'light' ? 'invert(1)' : 'none'}
+          />
+        </Link>
       </Box>
       <Spacer paddingRight={50} />
       <Box display="flex" alignItems="center" height="100%">

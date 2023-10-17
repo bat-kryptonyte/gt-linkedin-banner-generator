@@ -184,7 +184,7 @@ export default function Home() {
     <Box maxWidth="80vw" mx="auto">
       <GTNavbar />
       <Container maxW="container.xl" paddingTop={5}>
-        <Heading paddingBottom={10} fontSize={[15, 20, 25]}>
+        <Heading paddingBottom={10} fontSize={[21, 23, 25]}>
           Create a GT-themed LinkedIn Profile Banner
         </Heading>
 
