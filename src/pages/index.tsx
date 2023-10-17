@@ -26,14 +26,14 @@ export default function Home() {
   ];
 
   const banners = [
-    { src: '/images/default-blue.jpeg', block: blocks[1], font: '75px Georgia', color: 'white' },
-    { src: '/images/default.jpeg', block: blocks[0], font: '75px Georgia', color: '#003057' },
-    { src: '/images/pool.jpeg', block: blocks[1], font: '75px Times New Roman', color: 'white' },
+    { src: '/images/default-blue.jpeg', block: blocks[1], font: '75px Garamond', color: 'white' },
+    { src: '/images/default.jpeg', block: blocks[0], font: '75px Verdana', color: '#003057' },
+    { src: '/images/pool.jpeg', block: blocks[1], font: '75px Tahoma', color: 'white' },
     { src: '/images/tower.jpeg', block: blocks[2], font: '75px Georgia', color: 'white' },
 
     { src: '/images/cap.jpeg', block: blocks[1], font: '75px Georgia', color: 'white' },
 
-    { src: '/images/wreck.jpeg', block: blocks[1], font: '50px Georgia', color: 'black' },
+    { src: '/images/wreck.jpeg', block: blocks[1], font: '75px Brush Script MT', color: 'black' },
   ];
 
   const [selectedBanner, setSelectedBanner] = useState(banners[0]);
@@ -83,6 +83,31 @@ export default function Home() {
       });
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const img = new Image();
+    img.onload = () => {
+      if (img.width === 1584 && img.height === 396) {
+        const reader = new FileReader();
+        reader.onload = event => {
+          const newBanner = {
+            src: event.target?.result as string,
+            block: blocks[1],
+            font: '75px Garamond',
+            color: 'white',
+          };
+          setSelectedBanner(newBanner);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('Please upload an image of size 1584x396.');
+      }
+    };
+    img.src = URL.createObjectURL(file);
+  };
+
   const generateImage = () => {
     if (!selectedBanner) return;
 
@@ -120,7 +145,7 @@ export default function Home() {
 
         while (currentWidth > maxAllowableWidth && currentSize > 10) {
           currentSize -= 1;
-          ctx.font = `${currentSize}px ${selectedBanner.font.split(' ')[1]}`;
+          ctx.font = `${currentSize}px ${selectedBanner.font.split(' ').slice(1).join(' ')}`;
           currentWidth = ctx.measureText(text).width;
         }
 
@@ -129,19 +154,14 @@ export default function Home() {
 
       ctx.fillStyle = selectedBanner.color;
       const adjustedFontSize1 = adjustFontSize(bannerFontSize, input1Ref.current?.value || '');
-      ctx.font = `${adjustedFontSize1}px ${selectedBanner.font.split(' ')[1]}`;
+      ctx.font = `${adjustedFontSize1}px  ${selectedBanner.font.split(' ').slice(1).join(' ')}`;
       const input1Width = ctx.measureText(input1Ref.current?.value || '').width;
       ctx.fillText(input1Ref.current?.value || '', xPosition - input1Width, yPosition);
 
       const adjustedFontSize2 = adjustFontSize(bannerFontSize / 2, input2Ref.current?.value || '');
-      ctx.font = `${adjustedFontSize2}px ${selectedBanner.font.split(' ')[1]}`;
+      ctx.font = `${adjustedFontSize2}px  ${selectedBanner.font.split(' ').slice(1).join(' ')}`;
       const input2Width = ctx.measureText(input2Ref.current?.value || '').width;
       ctx.fillText(input2Ref.current?.value || '', xPosition - input2Width, yPosition + 60);
-
-      const adjustedFontSize3 = adjustFontSize(bannerFontSize / 2, input3Ref.current?.value || '');
-      ctx.font = `${adjustedFontSize3}px ${selectedBanner.font.split(' ')[1]}`;
-      const input3Width = ctx.measureText(input3Ref.current?.value || '').width;
-      ctx.fillText(input3Ref.current?.value || '', xPosition - input3Width, yPosition + 110);
 
       setPreviewSrc(canvas.toDataURL('image/png'));
     };
@@ -164,12 +184,18 @@ export default function Home() {
     <Box maxWidth="80vw" mx="auto">
       <GTNavbar />
       <Container maxW="container.xl" paddingTop={5}>
-        <Heading paddingBottom={10} fontSize={25}>
+        <Heading paddingBottom={10} fontSize={[15, 20, 25]}>
           Create a GT-themed LinkedIn Profile Banner
         </Heading>
 
-        <HStack spacing={5} alignItems="flex-start" paddingBottom={10}>
-          <VStack spacing={3} alignItems="flex-start" flex="1">
+        <Flex alignItems="flex-start" paddingBottom={10} wrap="wrap">
+          <VStack
+            spacing={3}
+            alignItems="flex-start"
+            width={['100%', '50%']}
+            paddingRight={10}
+            paddingBottom={10}
+          >
             <Heading fontSize={20}>Banner Text:</Heading>
             <VStack spacing={1} alignItems="flex-start" w="100%">
               <FormLabel htmlFor="name">Name:</FormLabel>
@@ -192,18 +218,22 @@ export default function Home() {
                 onChange={() => generateImage()}
                 borderColor={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
               />
-
               <Text fontSize={10}>Example: ISyE @ GT</Text>
             </VStack>
           </VStack>
 
-          <VStack spacing={6} flex="1">
+          <VStack spacing={6} alignItems="flex-start" width={['100%', '50%']}>
             <Heading fontSize={20}>Choose a template:</Heading>
             <Flex wrap="wrap">
               {banners.map((banner, index) => (
                 <Box
                   key={index}
-                  border={selectedBanner.src === banner.src ? '2px solid black' : ''}
+                  border={
+                    selectedBanner.src === banner.src
+                      ? `${colorMode === 'dark' ? '2px solid white' : '2px solid black'}`
+                      : ''
+                  }
+                  borderRadius={5}
                   flexBasis={['100%', '50%', '50%']}
                   maxWidth={['100%', '50%', '50%']}
                   boxSizing="border-box"
@@ -221,19 +251,30 @@ export default function Home() {
                 </Box>
               ))}
             </Flex>
+            <Heading fontSize={20}>Upload Your Own Template:</Heading>
+            <Input type="file" accept="image/*" onChange={handleImageUpload} />
           </VStack>
-        </HStack>
+        </Flex>
+
         {previewSrc && (
           <VStack spacing={3}>
             <Text fontSize="xl" fontWeight="semibold">
               Your LinkedIn Banner:
             </Text>
-            <ChakraImage src={previewSrc} alt="Generated Banner" boxSize="50%" />
+            <ChakraImage
+              src={previewSrc}
+              alt="Generated Banner"
+              boxSize="50%"
+              paddingBottom={5}
+              onContextMenu={e => e.preventDefault()}
+            />
             <HStack spacing={10}>
-              <Text fontSize="sm" fontWeight={'semibold'}>
+              <Text fontSize={['xs', 'sm', 'md']} fontWeight={'semibold'}>
                 All Time Downloads: {downloads}
               </Text>
-              <Button onClick={downloadImage}>Download Your Banner</Button>
+              <Button fontSize={['xs', 'sm', 'md']} onClick={downloadImage}>
+                Download Your Banner
+              </Button>
             </HStack>
           </VStack>
         )}

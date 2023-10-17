@@ -1,4 +1,4 @@
-import db from '../../lib/db';
+import { sql } from '@vercel/postgres';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type Data = {
@@ -7,15 +7,18 @@ type Data = {
   error?: string;
 };
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  if (req.method === 'GET') {
-    db.get('SELECT SUM(count) as total FROM download_count', [], (err: any, row: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function handler(request: NextApiRequest, response: NextApiResponse<Data>) {
+  try {
+    await sql`CREATE TABLE IF NOT EXISTS download_count (count INT);`;
 
-      if (err) return res.status(500).json({ success: false, error: err.message });
-      res.json({ success: true, downloadCount: row.total });
-    });
-  } else {
-    res.status(405).end();
+    const results = await sql`SELECT SUM(count) as total FROM download_count;`;
+
+    if (results.rows && results.rows.length > 0) {
+      response.json({ success: true, downloadCount: results.rows[0].total || 0 });
+    } else {
+      response.status(404).json({ success: false, error: 'No data found in the table.' });
+    }
+  } catch (error) {
+    response.status(500).json({ success: false, error: 'Internal server error.' });
   }
 }

@@ -23,7 +23,7 @@ const GTNavbar: React.FC = () => {
           filter={colorMode === 'light' ? 'invert(1)' : 'none'}
         />
       </Box>
-      <Spacer />
+      <Spacer paddingRight={50} />
       <Box display="flex" alignItems="center" height="100%">
         <Link
           href="https://github.com/bat-kryptonyte/gt-linkedin-banner-generator"
