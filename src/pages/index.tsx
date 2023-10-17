@@ -15,6 +15,7 @@ import {
   FormLabel,
   Heading,
   Flex,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import GTNavbar from '@/components/GTNavBar';
 import GTFooter from '@/components/Footer';
@@ -111,6 +112,8 @@ export default function Home() {
     img.src = URL.createObjectURL(file);
   };
 
+  const boxSizeValue = useBreakpointValue({ base: '100%', md: '50%' });
+
   const resizeAndCropImage = (
     imageSrc: string,
     desiredWidth: number,
@@ -181,10 +184,11 @@ export default function Home() {
       ctx.font = `${bannerFontSize}px ${selectedBanner.font.split(' ')[1]}`;
 
       const adjustFontSize = (initialSize: number, text: string) => {
+        const isMobile = window.innerWidth <= 768;
         let currentSize = initialSize;
         let currentWidth = ctx.measureText(text).width;
 
-        const maxAllowableWidth = window.innerWidth * 0.35;
+        const maxAllowableWidth = isMobile ? window.innerWidth * 0.8 : window.innerWidth * 0.35;
 
         while (currentWidth > maxAllowableWidth && currentSize > 10) {
           currentSize -= 1;
@@ -311,14 +315,12 @@ export default function Home() {
           <Text fontSize="xl" fontWeight="semibold">
             Your LinkedIn Banner:
           </Text>
-          <Box width="full" maxW="50%">
+          <Box boxSize={boxSizeValue}>
             <AspectRatio ratio={1584 / 396}>
               <ChakraImage
                 src={previewSrc}
                 alt="Generated Banner"
                 objectFit="cover"
-                width="full"
-                height="full"
                 onContextMenu={e => e.preventDefault()}
               />
             </AspectRatio>
