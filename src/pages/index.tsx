@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useColorMode } from '@chakra-ui/react';
 
 import {
+  AspectRatio,
   Input,
   Button,
   Container,
@@ -16,6 +17,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import GTNavbar from '@/components/GTNavBar';
+import GTFooter from '@/components/Footer';
 
 export default function Home() {
   const blocks = [
@@ -37,7 +39,8 @@ export default function Home() {
   ];
 
   const [selectedBanner, setSelectedBanner] = useState(banners[0]);
-  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [previewSrc, setPreviewSrc] = useState<string>('');
   const [downloads, setDownloads] = useState(0);
 
   const { colorMode } = useColorMode();
@@ -108,6 +111,46 @@ export default function Home() {
     img.src = URL.createObjectURL(file);
   };
 
+  const resizeAndCropImage = (
+    imageSrc: string,
+    desiredWidth: number,
+    desiredHeight: number,
+    callback: (arg: string) => void,
+  ) => {
+    const img = new Image();
+    img.src = imageSrc;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const aspectRatio = img.width / img.height;
+      const newAspectRatio = desiredWidth / desiredHeight;
+
+      let srcWidth,
+        srcHeight,
+        srcX = 0,
+        srcY = 0;
+
+      if (aspectRatio > newAspectRatio) {
+        srcHeight = img.height;
+        srcWidth = img.height * newAspectRatio;
+        srcX = (img.width - srcWidth) / 2;
+      } else {
+        srcWidth = img.width;
+        srcHeight = img.width / newAspectRatio;
+        srcY = (img.height - srcHeight) / 2;
+      }
+
+      canvas.width = desiredWidth;
+      canvas.height = desiredHeight;
+
+      if (ctx)
+        ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, desiredWidth, desiredHeight);
+      callback(canvas.toDataURL('image/png'));
+    };
+  };
+
   const generateImage = () => {
     if (!selectedBanner) return;
 
@@ -121,7 +164,7 @@ export default function Home() {
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, 1584, 396);
 
       const segmentWidth = img.width / 6;
       const xPosition = (selectedBanner.block.segment - 1) * segmentWidth + segmentWidth - 50;
@@ -229,7 +272,7 @@ export default function Home() {
                 <Box
                   key={index}
                   border={
-                    selectedBanner.src === banner.src
+                    selectedIndex === index
                       ? `${colorMode === 'dark' ? '2px solid white' : '2px solid black'}`
                       : ''
                   }
@@ -246,7 +289,16 @@ export default function Home() {
                     height={30}
                     objectFit="cover"
                     cursor="pointer"
-                    onClick={() => setSelectedBanner(banner)}
+                    onClick={() => {
+                      resizeAndCropImage(banner.src, 1584, 396, resizedImageSrc => {
+                        const newBanner = {
+                          ...banner,
+                          src: resizedImageSrc,
+                        };
+                        setSelectedBanner(newBanner);
+                        setSelectedIndex(index);
+                      });
+                    }}
                   />
                 </Box>
               ))}
@@ -255,29 +307,33 @@ export default function Home() {
             <Input type="file" accept="image/*" onChange={handleImageUpload} />
           </VStack>
         </Flex>
-
-        {previewSrc && (
-          <VStack spacing={3}>
-            <Text fontSize="xl" fontWeight="semibold">
-              Your LinkedIn Banner:
+        <VStack alignItems={['flex-start', 'center']} spacing={3} w="full">
+          <Text fontSize="xl" fontWeight="semibold">
+            Your LinkedIn Banner:
+          </Text>
+          <Box width="full" maxW="50%">
+            <AspectRatio ratio={1584 / 396}>
+              <ChakraImage
+                src={previewSrc}
+                alt="Generated Banner"
+                objectFit="cover"
+                width="full"
+                height="full"
+                onContextMenu={e => e.preventDefault()}
+              />
+            </AspectRatio>
+          </Box>
+          <HStack spacing={10}>
+            <Text fontSize={['xs', 'sm', 'md']} fontWeight={'semibold'}>
+              All Time Downloads: {downloads}
             </Text>
-            <ChakraImage
-              src={previewSrc}
-              alt="Generated Banner"
-              boxSize="50%"
-              paddingBottom={5}
-              onContextMenu={e => e.preventDefault()}
-            />
-            <HStack spacing={10}>
-              <Text fontSize={['xs', 'sm', 'md']} fontWeight={'semibold'}>
-                All Time Downloads: {downloads}
-              </Text>
-              <Button fontSize={['xs', 'sm', 'md']} onClick={downloadImage}>
-                Download Your Banner
-              </Button>
-            </HStack>
-          </VStack>
-        )}
+            <Button fontSize={['xs', 'sm', 'md']} onClick={downloadImage}>
+              Download Image
+            </Button>
+          </HStack>
+        </VStack>
+
+        <GTFooter />
       </Container>
     </Box>
   );
