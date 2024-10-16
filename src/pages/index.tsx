@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
+import Head from 'next/head';
 import { useColorMode } from '@chakra-ui/react';
 
 import {
@@ -233,131 +234,136 @@ export default function Home() {
   }, []);
 
   return (
-    <Box maxWidth="80vw" mx="auto">
-      <GTNavbar />
-      <Container maxW="container.xl" paddingTop={5}>
-        <Heading paddingBottom={3} fontSize={[21, 23, 25]}>
-          Create a GT-themed LinkedIn Profile Banner
-        </Heading>
-        <Text paddingBottom={10}>
-          Your profile background is the single largest element on your entire LinkedIn page and you
-          can use it to professionally associate yourself with Tech! Customize a professional banner
-          below and get noticed on LinkedIn:
-        </Text>
-
-        <Flex alignItems="flex-start" paddingBottom={10} wrap="wrap">
-          <VStack
-            spacing={3}
-            alignItems="flex-start"
-            width={['100%', '50%']}
-            paddingRight={10}
-            paddingBottom={10}
-          >
-            <Heading fontSize={20}>Banner Text:</Heading>
-            <VStack spacing={1} alignItems="flex-start" w="100%">
-              <FormLabel htmlFor="name">Name:</FormLabel>
-              <Input
-                id="name"
-                placeholder="Name"
-                ref={input1Ref}
-                onChange={() => generateImage()}
-                borderColor={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
-              />
-              <Text fontSize={10}>Your Name: This will appear the largest on the banner</Text>
-            </VStack>
-
-            <VStack spacing={1} alignItems="flex-start" w="100%">
-              <FormLabel htmlFor="major">Subject/Concentration/Major:</FormLabel>
-              <Input
-                id="major"
-                placeholder="Major"
-                ref={input2Ref}
-                onChange={() => generateImage()}
-                borderColor={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
-              />
-              <Text fontSize={10}>Example: ISyE @ GT</Text>
-            </VStack>
-          </VStack>
-
-          <VStack spacing={6} alignItems="flex-start" width={['100%', '50%']}>
-            <Heading fontSize={20}>Choose a template:</Heading>
-            <Flex wrap="wrap">
-              {banners.map((banner, index) => (
-                <Box
-                  key={index}
-                  border={
-                    selectedIndex === index
-                      ? `${colorMode === 'dark' ? '2px solid white' : '2px solid black'}`
-                      : ''
-                  }
-                  borderRadius={5}
-                  flexBasis={['100%', '50%', '50%']}
-                  maxWidth={['100%', '50%', '50%']}
-                  boxSizing="border-box"
-                  padding="5px"
-                >
-                  <ChakraImage
-                    src={banner.src}
-                    alt={`Banner ${index}`}
-                    width="100%"
-                    height={30}
-                    objectFit="cover"
-                    cursor="pointer"
-                    onClick={() => {
-                      resizeAndCropImage(banner.src, 1584, 396, resizedImageSrc => {
-                        const newBanner = {
-                          ...banner,
-                          src: resizedImageSrc,
-                        };
-                        setSelectedBanner(newBanner);
-                        setSelectedIndex(index);
-                      });
-                    }}
-                  />
-                </Box>
-              ))}
-            </Flex>
-            <Heading fontSize={20}>Upload Your Own Template:</Heading>
-            <Input type="file" accept="image/*" onChange={handleImageUpload} />
-          </VStack>
-        </Flex>
-        <VStack alignItems={['flex-start', 'center']} spacing={3} w="full">
-          <Text fontSize="xl" fontWeight="semibold">
-            Your LinkedIn Banner:
+    <div>
+      <Head>
+        <title>GT LinkedIn Banner Generator</title>
+      </Head>
+      <Box maxWidth="80vw" mx="auto">
+        <GTNavbar />
+        <Container maxW="container.xl" paddingTop={5}>
+          <Heading paddingBottom={3} fontSize={[21, 23, 25]}>
+            Create a GT-themed LinkedIn Profile Banner
+          </Heading>
+          <Text paddingBottom={10}>
+            Your profile background is the single largest element on your entire LinkedIn page and
+            you can use it to professionally associate yourself with Tech! Customize a professional
+            banner below and get noticed on LinkedIn:
           </Text>
-          <Box boxSize={boxSizeValue}>
-            <AspectRatio ratio={1584 / 396}>
-              <ChakraImage
-                src={previewSrc}
-                alt="Generated Banner"
-                objectFit="cover"
-                onContextMenu={e => e.preventDefault()}
-              />
-            </AspectRatio>
-          </Box>
-          <HStack spacing={10}>
-            <Text fontSize={['xs', 'sm', 'md']} fontWeight={'semibold'}>
-              All Time Downloads: {downloads}
-            </Text>
-            <Button
-              fontSize={['xs', 'sm', 'md']}
-              alignContent="space-between"
-              onClick={downloadImage}
-            >
-              <IconContext.Provider
-                value={{ color: `${colorMode === 'dark' ? 'white' : 'black'}` }}
-              >
-                <div style={{ marginRight: '8px' }}>
-                  <AiOutlineCloudDownload />
-                </div>
-              </IconContext.Provider>
-              Download Image
-            </Button>
-          </HStack>
-        </VStack>
 
-        <GTFooter />
-      </Container>
-    </Box>
+          <Flex alignItems="flex-start" paddingBottom={10} wrap="wrap">
+            <VStack
+              spacing={3}
+              alignItems="flex-start"
+              width={['100%', '50%']}
+              paddingRight={10}
+              paddingBottom={10}
+            >
+              <Heading fontSize={20}>Banner Text:</Heading>
+              <VStack spacing={1} alignItems="flex-start" w="100%">
+                <FormLabel htmlFor="name">Name:</FormLabel>
+                <Input
+                  id="name"
+                  placeholder="Name"
+                  ref={input1Ref}
+                  onChange={() => generateImage()}
+                  borderColor={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
+                />
+                <Text fontSize={10}>Your Name: This will appear the largest on the banner</Text>
+              </VStack>
+
+              <VStack spacing={1} alignItems="flex-start" w="100%">
+                <FormLabel htmlFor="major">Subject/Concentration/Major:</FormLabel>
+                <Input
+                  id="major"
+                  placeholder="Major"
+                  ref={input2Ref}
+                  onChange={() => generateImage()}
+                  borderColor={colorMode === 'dark' ? 'gray.300' : 'gray.600'}
+                />
+                <Text fontSize={10}>Example: ISyE @ GT</Text>
+              </VStack>
+            </VStack>
+
+            <VStack spacing={6} alignItems="flex-start" width={['100%', '50%']}>
+              <Heading fontSize={20}>Choose a template:</Heading>
+              <Flex wrap="wrap">
+                {banners.map((banner, index) => (
+                  <Box
+                    key={index}
+                    border={
+                      selectedIndex === index
+                        ? `${colorMode === 'dark' ? '2px solid white' : '2px solid black'}`
+                        : ''
+                    }
+                    borderRadius={5}
+                    flexBasis={['100%', '50%', '50%']}
+                    maxWidth={['100%', '50%', '50%']}
+                    boxSizing="border-box"
+                    padding="5px"
+                  >
+                    <ChakraImage
+                      src={banner.src}
+                      alt={`Banner ${index}`}
+                      width="100%"
+                      height={30}
+                      objectFit="cover"
+                      cursor="pointer"
+                      onClick={() => {
+                        resizeAndCropImage(banner.src, 1584, 396, resizedImageSrc => {
+                          const newBanner = {
+                            ...banner,
+                            src: resizedImageSrc,
+                          };
+                          setSelectedBanner(newBanner);
+                          setSelectedIndex(index);
+                        });
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Flex>
+              <Heading fontSize={20}>Upload Your Own Template:</Heading>
+              <Input type="file" accept="image/*" onChange={handleImageUpload} />
+            </VStack>
+          </Flex>
+          <VStack alignItems={['flex-start', 'center']} spacing={3} w="full">
+            <Text fontSize="xl" fontWeight="semibold">
+              Your LinkedIn Banner:
+            </Text>
+            <Box boxSize={boxSizeValue}>
+              <AspectRatio ratio={1584 / 396}>
+                <ChakraImage
+                  src={previewSrc}
+                  alt="Generated Banner"
+                  objectFit="cover"
+                  onContextMenu={e => e.preventDefault()}
+                />
+              </AspectRatio>
+            </Box>
+            <HStack spacing={10}>
+              <Text fontSize={['xs', 'sm', 'md']} fontWeight={'semibold'}>
+                All Time Downloads: {downloads}
+              </Text>
+              <Button
+                fontSize={['xs', 'sm', 'md']}
+                alignContent="space-between"
+                onClick={downloadImage}
+              >
+                <IconContext.Provider
+                  value={{ color: `${colorMode === 'dark' ? 'white' : 'black'}` }}
+                >
+                  <div style={{ marginRight: '8px' }}>
+                    <AiOutlineCloudDownload />
+                  </div>
+                </IconContext.Provider>
+                Download Image
+              </Button>
+            </HStack>
+          </VStack>
+
+          <GTFooter />
+        </Container>
+      </Box>
+    </div>
   );
 }
